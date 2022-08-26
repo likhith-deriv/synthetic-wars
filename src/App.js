@@ -2,6 +2,7 @@ import logo from "./logo.svg";
 import "./App.css";
 import OperatorConsole from "./components/operator-console";
 import WarZone from "./components/war-zone";
+import ComputerPlayer from "./components/computer-player";
 import { SocketProvider, StoreProvider } from "./hooks";
 
 function App() {
@@ -13,7 +14,10 @@ function App() {
       <SocketProvider>
         <StoreProvider>
           <WarZone />
-          <OperatorConsole />
+          <div style={{ display: "flex" }}>
+            <ComputerPlayer />
+            <OperatorConsole />
+          </div>
         </StoreProvider>
       </SocketProvider>
     </div>

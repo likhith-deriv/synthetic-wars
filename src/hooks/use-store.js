@@ -5,6 +5,7 @@ const root_store = new RootStore();
 const stores = {
   common_store: root_store.common_store,
   player_store: root_store.player_store,
+  computer_store: root_store.computer_store,
 };
 const StoresContext = createContext(stores);
 

@@ -1,8 +1,10 @@
 import { observer } from "mobx-react-lite";
 import React, { useState } from "react";
+import { useStores } from "../hooks";
 
 const SelectWeapon = ({ weapons, onSelect }) => {
   const [selected_weapon, setSelectedWeapon] = useState("");
+  const { player_store } = useStores();
 
   return (
     <select
@@ -20,7 +22,11 @@ const SelectWeapon = ({ weapons, onSelect }) => {
         --Select Weapon--
       </option>
       {weapons.map((weapon, index) => (
-        <option key={index + 1} value={weapon.symbol}>
+        <option
+          key={index + 1}
+          value={weapon.symbol}
+          disabled={player_store.used_weapons.includes(weapon.symbol)}
+        >
           {weapon.display_name}
         </option>
       ))}
