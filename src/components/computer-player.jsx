@@ -29,13 +29,12 @@ const ComputerPlayer = () => {
 
   const resetTick = () => {
     if (tick_id) {
+      setTickId(null);
       sendRequest(wsRef.current, { forget: tick_id });
-      // setCaptureStream(false);
     }
   };
 
   const fetchTicks = (selectedSymbol) => {
-    console.log("Selected symbol: ", selectedSymbol);
     resetTick();
     sendRequest(wsRef.current, {
       ticks: selectedSymbol,
@@ -50,9 +49,12 @@ const ComputerPlayer = () => {
 
   const loadEnergy = () => {
     computer_store.setEnergy(tick_value);
-    computer_store.discardWeapon(selected_weapon?.symbol);
-    console.log("Called after loadEnergy");
+    computer_store.discardWeapon({
+      symbol: selected_weapon.symbol,
+      name: selected_weapon.display_name,
+    });
     resetTick();
+    setSelectedWeapon(null);
   };
 
   useEffect(() => {
@@ -66,6 +68,7 @@ const ComputerPlayer = () => {
     if (selected_weapon?.symbol) {
       fetchTicks(selected_weapon.symbol);
       computer_store.loadWeapon(selected_weapon.symbol);
+      computer_store.setWeaponName(selected_weapon.display_name);
     }
   }, [selected_weapon]);
 
@@ -76,12 +79,11 @@ const ComputerPlayer = () => {
   }, [common_store.arsenal]);
 
   useEffect(() => {
-    if (selected_weapon?.symbol) {
-      const remaining_arsenal = weapon_list.filter(
-        (weapon) => weapon.symbol !== selected_weapon.symbol
-      );
-      setWeaponList(remaining_arsenal);
-    }
+    const remaining_arsenal = weapon_list.filter(
+      (weapon) => weapon.symbol !== computer_store.weapon
+    );
+    setWeaponList(remaining_arsenal);
+    setCaptureStream(false);
   }, [common_store.volley_count]);
 
   useEffect(() => {
@@ -100,7 +102,7 @@ const ComputerPlayer = () => {
   return (
     <section style={{ border: "1px solid red" }}>
       <h1>Computer player chooses</h1>
-      <div>Selected Weapon: {selected_weapon?.display_name} </div>
+      <div>Selected Weapon: {computer_store.display_name} </div>
       <div>Selected power:{computer_store.energy}</div>
     </section>
   );

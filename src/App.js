@@ -4,6 +4,7 @@ import OperatorConsole from "./components/operator-console";
 import WarZone from "./components/war-zone";
 import ComputerPlayer from "./components/computer-player";
 import { SocketProvider, StoreProvider } from "./hooks";
+import Scoreboard from "./components/scoreboard";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
       <SocketProvider>
         <StoreProvider>
           <WarZone />
+          <Scoreboard />
           <div style={{ display: "flex" }}>
             <ComputerPlayer />
             <OperatorConsole />

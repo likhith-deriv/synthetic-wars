@@ -9,7 +9,7 @@ import SelectWeapon from "./select-weapon";
 import DisplayEnergy from "./display-energy";
 import { useSocket, useStores } from "../hooks";
 import { observer } from "mobx-react-lite";
-import { sendRequest } from "../utils/socket";
+import { sendRequest } from "../utils";
 
 const OperatorConsole = () => {
   const [tick_id, setTickId] = useState(null);
@@ -39,15 +39,17 @@ const OperatorConsole = () => {
   }, []);
 
   useEffect(() => {
-    if (selected_weapon) {
-      fetchTicks(selected_weapon);
-      player_store.loadWeapon(selected_weapon);
+    if (selected_weapon?.symbol) {
+      fetchTicks(selected_weapon.symbol);
+      player_store.loadWeapon(selected_weapon.symbol);
+      player_store.setWeaponName(selected_weapon.display_name);
     }
   }, [selected_weapon]);
 
   const resetTick = () => {
     if (tick_id) {
       sendRequest(wsRef.current, { forget: tick_id });
+      setTickId(null);
     }
   };
 
@@ -63,8 +65,13 @@ const OperatorConsole = () => {
 
   const onLoadTurretHandler = () => {
     player_store.setEnergy(tick_value);
-    player_store.discardWeapon(selected_weapon);
+    player_store.discardWeapon({
+      symbol: selected_weapon.symbol,
+      name: selected_weapon.display_name,
+    });
+    player_store.setReadyState(true);
     resetTick();
+    setSelectedWeapon(null);
   };
 
   return (
@@ -76,12 +83,14 @@ const OperatorConsole = () => {
             onSelect={onSelectHandler}
           />
           <DisplayEnergy energy={tick_value} />
-          <button onClick={onLoadTurretHandler} disabled={tick_value === 0}>
+          <button
+            onClick={onLoadTurretHandler}
+            disabled={tick_value === 0 || player_store.ready}
+          >
             Load turret
           </button>
         </section>
       )}
-      <div>Selected {player_store.used_weapons}</div>
     </Fragment>
   );
 };

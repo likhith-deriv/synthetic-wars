@@ -15,7 +15,10 @@ const SelectWeapon = ({ weapons, onSelect }) => {
           return;
         }
         setSelectedWeapon(event.target.value);
-        onSelect(event.target.value);
+        const chosen_weapon = weapons.find(
+          (weapon) => weapon.symbol === event.target.value
+        );
+        onSelect(chosen_weapon);
       }}
     >
       <option value="" key="0">
