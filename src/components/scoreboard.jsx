@@ -13,8 +13,8 @@ const ScoreBoard = () => {
       energy: player_store.energy,
     };
     const computer_details = {
-      weapon: player_store.weapon,
-      energy: player_store.energy,
+      weapon: computer_store.weapon,
+      energy: computer_store.energy,
     };
     const result = tallyPower(
       computer_details,
@@ -22,9 +22,9 @@ const ScoreBoard = () => {
       common_store.impact_rule
     );
     if (result === "PLAYER") {
-      computer_store.modifyHealth(10);
+      computer_store.modifyHealth();
     } else {
-      player_store.modifyHealth(10);
+      player_store.modifyHealth();
     }
     player_store.setReadyState(false);
     computer_store.setReadyState(false);

@@ -9,20 +9,19 @@ const ComputerPlayer = () => {
   const [tick_value, setTickValue] = useState(0);
   const [selected_weapon, setSelectedWeapon] = useState({});
   const [weapon_list, setWeaponList] = useState([]);
-  const [capture_stream, setCaptureStream] = useState(false);
 
   const { common_store, computer_store } = useStores();
   const wsRef = useRef();
-  const socket = useSocket();
+  const { computer_ws: socket } = useSocket();
+  const capture_stream = useRef();
 
   const onMessage = useCallback((msg) => {
-    if (computer_store.weapon && !capture_stream) {
+    if (computer_store.weapon && capture_stream.current) {
       const data = JSON.parse(msg.data);
       if (data.msg_type === "tick") {
         const { quote, id } = data.tick;
         setTickValue(quote);
         setTickId(id);
-        setCaptureStream(true);
       }
     }
   }, []);
@@ -54,6 +53,7 @@ const ComputerPlayer = () => {
       name: selected_weapon.display_name,
     });
     resetTick();
+    capture_stream.current = false;
     setSelectedWeapon(null);
   };
 
@@ -79,11 +79,14 @@ const ComputerPlayer = () => {
   }, [common_store.arsenal]);
 
   useEffect(() => {
-    const remaining_arsenal = weapon_list.filter(
-      (weapon) => weapon.symbol !== computer_store.weapon
-    );
-    setWeaponList(remaining_arsenal);
-    setCaptureStream(false);
+    if (weapon_list.length) {
+      const remaining_arsenal = weapon_list.filter(
+        (weapon) => weapon.symbol !== computer_store.weapon
+      );
+      setWeaponList(remaining_arsenal);
+    }
+    console.log("Computer: setting true");
+    capture_stream.current = true;
   }, [common_store.volley_count]);
 
   useEffect(() => {
@@ -92,16 +95,16 @@ const ComputerPlayer = () => {
 
   useEffect(() => {
     const timer = randomInteger(3500, 8000);
-    if (capture_stream) {
+    if (tick_id) {
       setTimeout(() => {
         loadEnergy();
       }, timer);
     }
-  }, [capture_stream]);
+  }, [tick_id]);
 
   return (
     <section style={{ border: "1px solid red" }}>
-      <h1>Computer player chooses</h1>
+      <h1>Computer chooses</h1>
       <div>Selected Weapon: {computer_store.display_name} </div>
       <div>Selected power:{computer_store.energy}</div>
     </section>

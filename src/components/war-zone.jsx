@@ -7,7 +7,7 @@ import setRandomInterval from "set-random-interval";
 import { useState } from "react";
 
 const WarZone = () => {
-  const socket = useSocket();
+  const { computer_ws: socket } = useSocket();
   const { common_store } = useStores();
   const wsRef = useRef();
   const timerRef = useRef();
@@ -77,8 +77,8 @@ const WarZone = () => {
 
     const weapon = randomInteger(0, stock - 1);
     common_store.configureImpactRule(
-      common_store.arsenal[weapon].display_name,
-      common_store.arsenal[weapon].symbol,
+      common_store.arsenal[weapon]?.display_name,
+      common_store.arsenal[weapon]?.symbol,
       percent,
       status
     );

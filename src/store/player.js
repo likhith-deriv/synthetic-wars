@@ -8,8 +8,10 @@ export default class Player extends Base {
   @observable health = 100;
   @observable ready = false;
 
-  constructor() {
-    super();
+  constructor(root_store) {
+    super(root_store);
+
+    console.log(root_store);
     makeObservable(this);
   }
 
@@ -40,7 +42,9 @@ export default class Player extends Base {
 
   @action.bound
   modifyHealth() {
-    this.health -= 10;
+    const weapons = this.root_store.common_store.arsenal.length;
+    this.health -= Math.ceil(100 / (weapons - this.used_weapons.length + 1));
+    console.log("fix_percent: ", this.health);
   }
 
   @action.bound
